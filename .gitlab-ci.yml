@@ -1,0 +1,223 @@
+# ============================================================================
+# CompeteIQ — GitLab CI/CD pipeline
+#
+# Stages: lint -> test-ut -> test-it-api -> build -> publish -> deploy-staging
+#         -> deploy-prod (manual).  UI E2E tests are LOCAL ONLY and never run
+#         in this pipeline (enforced via ``-m "not integration_ui"``).
+#
+# Required CI/CD variables (Project > Settings > CI/CD):
+#   - OPENAI_API_KEY            (masked)   required for test-it-api
+#   - LANGFUSE_SECRET_KEY       (masked)   required for test-it-api
+#   - LANGFUSE_PUBLIC_KEY       (masked)   required for test-it-api
+#   - LANGFUSE_HOST                        optional, default cloud.langfuse.com
+#   - AWS_ROLE_TO_ASSUME                   OIDC role ARN for deploy
+#   - AWS_REGION                           e.g. us-east-1
+#   - ECR_REGISTRY                         e.g. 123456789.dkr.ecr.us-east-1.amazonaws.com
+#   - ECR_REPOSITORY                       e.g. competeiq
+#   - ECS_CLUSTER / ECS_SERVICE / ECS_TASK_DEFINITION_FAMILY
+# ============================================================================
+
+image: python:3.11-slim-bookworm
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  COMPETEIQ_CHROMA_MODE: "memory"
+
+cache:
+  key:
+    files:
+      - requirements/base.in
+      - requirements/dev.in
+      - requirements/test.in
+  paths:
+    - .cache/pip
+
+stages:
+  - lint
+  - test-ut
+  - test-it-api
+  - build
+  - publish
+  - deploy-staging
+  - deploy-prod
+
+# --------------------------------------------------------------------------- #
+# Lint
+# --------------------------------------------------------------------------- #
+lint:
+  stage: lint
+  script:
+    - pip install ruff==0.6.9 mypy==1.11.2
+    - ruff check src tests
+    - ruff format --check src tests
+    - mypy src/competeiq || true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG
+
+# --------------------------------------------------------------------------- #
+# Unit tests — fully mocked, no secrets, fast
+# --------------------------------------------------------------------------- #
+test-ut:
+  stage: test-ut
+  variables:
+    OPENAI_API_KEY: "ci-dummy-openai"
+    LANGFUSE_SECRET_KEY: "ci-dummy-lf-secret"
+    LANGFUSE_PUBLIC_KEY: "ci-dummy-lf-public"
+    LANGFUSE_HOST: "https://ci.invalid"
+  script:
+    - pip install -r requirements/base.txt -r requirements/test.txt
+    - pytest -m "unit and not integration_ui" --junitxml=report-ut.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report-ut.xml
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG
+
+# --------------------------------------------------------------------------- #
+# Integration tests (API) — requires real secrets; UI E2E excluded
+# --------------------------------------------------------------------------- #
+test-it-api:
+  stage: test-it-api
+  script:
+    - pip install -r requirements/base.txt -r requirements/test.txt
+    - pytest -m "integration_api and not integration_ui" --junitxml=report-it.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report-it.xml
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG
+  allow_failure: true
+
+# --------------------------------------------------------------------------- #
+# Build — wheel + sdist, and container image
+# --------------------------------------------------------------------------- #
+build-wheel:
+  stage: build
+  script:
+    - pip install build
+    - python -m build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 2 weeks
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG
+
+build-image:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - docker build -f deploy/Dockerfile.ui -t "$IMAGE_TAG" .
+    - docker save "$IMAGE_TAG" -o image.tar
+  artifacts:
+    paths:
+      - image.tar
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG
+
+# --------------------------------------------------------------------------- #
+# Publish — push image to AWS ECR via OIDC
+# --------------------------------------------------------------------------- #
+publish-ecr:
+  stage: publish
+  image:
+    name: amazon/aws-cli:2.17.0
+    entrypoint: [""]
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gitlab.com
+  variables:
+    IMAGE_TAG: $ECR_REGISTRY/$ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA
+  before_script:
+    - >-
+      aws sts assume-role-with-web-identity
+      --role-arn "$AWS_ROLE_TO_ASSUME"
+      --role-session-name "gitlab-ci-$CI_PIPELINE_ID"
+      --web-identity-token "$GITLAB_OIDC_TOKEN"
+      --duration-seconds 3600
+      > /tmp/creds.json
+    - export AWS_ACCESS_KEY_ID=$(jq -r .Credentials.AccessKeyId /tmp/creds.json)
+    - export AWS_SECRET_ACCESS_KEY=$(jq -r .Credentials.SecretAccessKey /tmp/creds.json)
+    - export AWS_SESSION_TOKEN=$(jq -r .Credentials.SessionToken /tmp/creds.json)
+  script:
+    - yum install -y docker jq
+    - docker load -i image.tar
+    - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" "$IMAGE_TAG"
+    - docker push "$IMAGE_TAG"
+    - echo "Published $IMAGE_TAG"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG
+
+# --------------------------------------------------------------------------- #
+# Deploy
+# --------------------------------------------------------------------------- #
+.deploy-ecs: &deploy-ecs
+  image:
+    name: amazon/aws-cli:2.17.0
+    entrypoint: [""]
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gitlab.com
+  before_script:
+    - >-
+      aws sts assume-role-with-web-identity
+      --role-arn "$AWS_ROLE_TO_ASSUME"
+      --role-session-name "gitlab-ci-$CI_PIPELINE_ID"
+      --web-identity-token "$GITLAB_OIDC_TOKEN"
+      --duration-seconds 3600
+      > /tmp/creds.json
+    - export AWS_ACCESS_KEY_ID=$(jq -r .Credentials.AccessKeyId /tmp/creds.json)
+    - export AWS_SECRET_ACCESS_KEY=$(jq -r .Credentials.SecretAccessKey /tmp/creds.json)
+    - export AWS_SESSION_TOKEN=$(jq -r .Credentials.SessionToken /tmp/creds.json)
+  script:
+    - IMAGE_TAG=$ECR_REGISTRY/$ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA
+    - >-
+      aws ecs update-service
+      --cluster "$ECS_CLUSTER"
+      --service "$ECS_SERVICE"
+      --force-new-deployment
+      --region "$AWS_REGION"
+    - >-
+      aws ecs wait services-stable
+      --cluster "$ECS_CLUSTER"
+      --services "$ECS_SERVICE"
+      --region "$AWS_REGION"
+
+deploy-staging:
+  stage: deploy-staging
+  <<: *deploy-ecs
+  environment:
+    name: staging
+    url: https://staging.competeiq.example.com
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy-prod:
+  stage: deploy-prod
+  <<: *deploy-ecs
+  environment:
+    name: production
+    url: https://competeiq.example.com
+  when: manual
+  rules:
+    - if: $CI_COMMIT_TAG
