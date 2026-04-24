@@ -14,8 +14,9 @@ class _StubSystem:
     all_products = [{"category": "Wireless Headphones"}]
 
     class _G:
-        graph = type("g", (), {"number_of_nodes": lambda self: 0,
-                               "number_of_edges": lambda self: 0})()
+        graph = type(
+            "g", (), {"number_of_nodes": lambda self: 0, "number_of_edges": lambda self: 0}
+        )()
 
     knowledge_graph = _G()
 
@@ -60,9 +61,7 @@ class _StubSystem:
         }
 
     def get_price_comparison(self, category):
-        return pd.DataFrame(
-            [{"company": "Company X", "product_name": "P", "effective_price": 1.0}]
-        )
+        return pd.DataFrame([{"company": "Company X", "product_name": "P", "effective_price": 1.0}])
 
 
 @pytest.fixture()

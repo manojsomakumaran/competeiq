@@ -15,9 +15,9 @@ Resolution order for each key:
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from typing import Iterable
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -112,9 +112,7 @@ class Settings(BaseSettings):
     openai_api_key: str = Field(..., alias="OPENAI_API_KEY")
     langfuse_secret_key: str = Field(..., alias="LANGFUSE_SECRET_KEY")
     langfuse_public_key: str = Field(..., alias="LANGFUSE_PUBLIC_KEY")
-    langfuse_host: str = Field(
-        default="https://us.cloud.langfuse.com", alias="LANGFUSE_HOST"
-    )
+    langfuse_host: str = Field(default="https://us.cloud.langfuse.com", alias="LANGFUSE_HOST")
 
     # Paths
     data_dir: Path = Field(default=Path("./datasets"), alias="COMPETEIQ_DATA_DIR")
@@ -134,7 +132,7 @@ class Settings(BaseSettings):
     # ---------------- Factory ----------------
 
     @classmethod
-    def load(cls, *, env_file: Path | None = None, **overrides: object) -> "Settings":
+    def load(cls, *, env_file: Path | None = None, **overrides: object) -> Settings:
         """Load settings, performing .env discovery + Colab userdata fallback."""
         target = env_file if env_file and Path(env_file).is_file() else discover_env_file()
         if target is not None:

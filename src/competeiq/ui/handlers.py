@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from competeiq.system import EcommerceIntelligenceSystem
 
 
-def analyze_category_ui(system: "EcommerceIntelligenceSystem", category: str) -> str:
+def analyze_category_ui(system: EcommerceIntelligenceSystem, category: str) -> str:
     if not category:
         return "Please select a category."
     try:
@@ -40,11 +40,11 @@ def analyze_category_ui(system: "EcommerceIntelligenceSystem", category: str) ->
             f"### Priority Actions\n{actions_md}"
             f"{marketing_line}"
         )
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return f"Error running analysis for '{category}': {exc}"
 
 
-def search_products_ui(system: "EcommerceIntelligenceSystem", query: str) -> str:
+def search_products_ui(system: EcommerceIntelligenceSystem, query: str) -> str:
     if not query or not query.strip():
         return "Please enter a search query."
     try:
@@ -64,11 +64,11 @@ def search_products_ui(system: "EcommerceIntelligenceSystem", query: str) -> str
             lines.append(f"   - Availability: {match.get('availability', 'N/A')}")
             lines.append("")
         return "\n".join(lines).strip()
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return f"Error running search: {exc}"
 
 
-def price_comparison_ui(system: "EcommerceIntelligenceSystem", category: str) -> str:
+def price_comparison_ui(system: EcommerceIntelligenceSystem, category: str) -> str:
     if not category:
         return "Please select a category."
     try:
@@ -82,11 +82,11 @@ def price_comparison_ui(system: "EcommerceIntelligenceSystem", category: str) ->
             lambda x: f"{x:+.2f}"
         )
         return f"## Price Comparison: {category}\n\n{display.to_markdown(index=False)}"
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return f"Error generating price comparison for '{category}': {exc}"
 
 
-def status_ui(system: "EcommerceIntelligenceSystem") -> str:
+def status_ui(system: EcommerceIntelligenceSystem) -> str:
     status = system.get_status()
     catalog = status["catalog"]
     vs = status["vector_store"]

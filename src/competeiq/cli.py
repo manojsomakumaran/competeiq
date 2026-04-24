@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import typer
@@ -109,9 +108,7 @@ def compare(category: str = typer.Argument(..., help="Product category to compar
 def index() -> None:
     """Rebuild the persistent vector store collection."""
     system = _build_system()
-    system.vector_store.index_products_with_tracing(
-        system.all_products, system.DEFAULT_COLLECTION
-    )
+    system.vector_store.index_products_with_tracing(system.all_products, system.DEFAULT_COLLECTION)
     console.print(f"Indexed {len(system.all_products)} products.")
 
 
@@ -126,9 +123,7 @@ def ui(
 
     system = _build_system()
     demo = build_app(system)
-    result = demo.launch(
-        share=share, server_name=host, server_port=port, prevent_thread_lock=False
-    )
+    result = demo.launch(share=share, server_name=host, server_port=port, prevent_thread_lock=False)
     console.print(
         f"Gradio running at http://{host}:{port}/  "
         f"(share: {getattr(result, 'share_url', None) or 'disabled'})"
@@ -164,9 +159,11 @@ def datasets_validate(
     for path in sorted(data_dir.glob("*.json")):
         try:
             cat = load_catalog_file(path)
-            console.print(f"[green]OK[/green] {path.name}: {cat['company']} "
-                          f"({len(cat['products'])} products)")
-        except Exception as exc:  # noqa: BLE001
+            console.print(
+                f"[green]OK[/green] {path.name}: {cat['company']} "
+                f"({len(cat['products'])} products)"
+            )
+        except Exception as exc:
             ok = False
             console.print(f"[red]FAIL[/red] {path.name}: {exc}")
     if not ok:

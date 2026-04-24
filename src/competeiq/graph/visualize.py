@@ -41,9 +41,7 @@ def draw_graph(graph: nx.DiGraph, output_path: Path | str = "product_knowledge_g
     }
     nx.draw_networkx_labels(graph, pos, labels=labels, font_size=8, font_weight="bold")
     legend_elements = [
-        Line2D(
-            [0], [0], marker="o", color="w", label=t, markerfacecolor=c, markersize=10
-        )
+        Line2D([0], [0], marker="o", color="w", label=t, markerfacecolor=c, markersize=10)
         for t, c in NODE_COLORS.items()
     ]
     plt.legend(handles=legend_elements, loc="upper left", frameon=True)

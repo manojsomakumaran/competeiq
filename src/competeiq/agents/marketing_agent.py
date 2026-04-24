@@ -64,5 +64,5 @@ Guidelines:
                 }
             )
             return {"success": True, "result": result.model_dump()}
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return {"success": False, "error": str(exc)}

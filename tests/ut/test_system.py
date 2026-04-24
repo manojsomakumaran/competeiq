@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from types import SimpleNamespace
-
 import pytest
 
 from competeiq.data.processor import TracedProductCatalogProcessor
@@ -120,5 +118,11 @@ def test_price_comparison_sorted_and_avg(system):
 @pytest.mark.unit
 def test_get_status_shape(system):
     s = system.get_status()
-    assert {"session_id", "our_company", "components", "catalog",
-            "vector_store", "knowledge_graph"} <= s.keys()
+    assert {
+        "session_id",
+        "our_company",
+        "components",
+        "catalog",
+        "vector_store",
+        "knowledge_graph",
+    } <= s.keys()

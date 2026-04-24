@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -13,7 +12,6 @@ from competeiq.data.catalogs import COMPANY_X_CATALOG, COMPANY_Y_CATALOG
 from competeiq.data.processor import TracedProductCatalogProcessor
 from competeiq.tracing import langfuse_client as _lf
 from competeiq.tracing.langfuse_client import LangfuseProvider
-
 
 # ---------------- Fake Langfuse ----------------
 

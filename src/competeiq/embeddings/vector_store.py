@@ -78,9 +78,7 @@ class TracedProductVectorStore:
         for product in products:
             rec_id = product.get("product_id") or product.get("sku", "")
             text = self.create_product_text(product)
-            embedding = traced_embedding(
-                text, trace_name=f"embed-{rec_id}", provider=provider
-            )
+            embedding = traced_embedding(text, trace_name=f"embed-{rec_id}", provider=provider)
             metadata = {
                 "product_id": rec_id,
                 "product_name": product.get("product_name", ""),
@@ -95,9 +93,7 @@ class TracedProductVectorStore:
             documents.append(text)
             metadatas.append(metadata)
 
-        collection.add(
-            ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas
-        )
+        collection.add(ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas)
         trace.update(output={"indexed_count": len(ids), "collection": collection_name})
 
     # ---------------- search ----------------
@@ -110,9 +106,7 @@ class TracedProductVectorStore:
         n_results: int = 5,
     ) -> dict[str, Any]:
         if collection_name not in self.collections:
-            raise ValueError(
-                f"Collection '{collection_name}' not found. Index products first."
-            )
+            raise ValueError(f"Collection '{collection_name}' not found. Index products first.")
 
         provider = self._provider or get_provider()
         collection = self.collections[collection_name]
@@ -128,9 +122,7 @@ class TracedProductVectorStore:
             },
         )
 
-        query_embedding = traced_embedding(
-            query, trace_name="embed-query", provider=provider
-        )
+        query_embedding = traced_embedding(query, trace_name="embed-query", provider=provider)
         results = collection.query(
             query_embeddings=[query_embedding],
             n_results=n_results,
@@ -144,7 +136,7 @@ class TracedProductVectorStore:
                     "company": m.get("company"),
                     "distance": round(d, 4),
                 }
-                for m, d in zip(results["metadatas"][0], results["distances"][0])
+                for m, d in zip(results["metadatas"][0], results["distances"][0], strict=False)
             ]
         trace.update(output={"top_results": top_results})
         return results

@@ -24,6 +24,7 @@ class _FakeParser:
 def _fake_build(output):
     def _builder(**kwargs):
         return _FakeChain(output), _FakeParser()
+
     return _builder
 
 

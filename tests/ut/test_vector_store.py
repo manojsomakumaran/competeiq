@@ -32,9 +32,7 @@ class _FakeCollection:
         return {
             "ids": [["p1"]],
             "documents": [["doc-text"]],
-            "metadatas": [
-                [{"product_name": "Test", "company": "Company X", "price": "99.99"}]
-            ],
+            "metadatas": [[{"product_name": "Test", "company": "Company X", "price": "99.99"}]],
             "distances": [[0.12]],
         }
 

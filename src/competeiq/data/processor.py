@@ -62,9 +62,7 @@ class TracedProductCatalogProcessor:
         features = list(product.get("features", []))
         features_normalized = self.normalize_features(features)
         feature_count = len(features)
-        price_per_feature = (
-            round(effective_price / feature_count, 4) if feature_count > 0 else 0.0
-        )
+        price_per_feature = round(effective_price / feature_count, 4) if feature_count > 0 else 0.0
         return {
             "company": company,
             "category": product.get("category", ""),
@@ -127,14 +125,10 @@ class TracedProductCatalogProcessor:
         trace.update(
             output={
                 "processed_count": len(results),
-                "avg_price": round(
-                    sum(p["effective_price"] for p in results) / len(results), 2
-                )
+                "avg_price": round(sum(p["effective_price"] for p in results) / len(results), 2)
                 if results
                 else 0,
-                "avg_features": round(
-                    sum(p["feature_count"] for p in results) / len(results), 2
-                )
+                "avg_features": round(sum(p["feature_count"] for p in results) / len(results), 2)
                 if results
                 else 0,
                 "discounted_count": sum(1 for p in results if p["discount_pct"] > 0),
@@ -159,12 +153,10 @@ class TracedProductCatalogProcessor:
             price_advantage = "tie"
 
         features_x = {
-            f.lower()
-            for f in product_x.get("features_normalized", product_x.get("features", []))
+            f.lower() for f in product_x.get("features_normalized", product_x.get("features", []))
         }
         features_y = {
-            f.lower()
-            for f in product_y.get("features_normalized", product_y.get("features", []))
+            f.lower() for f in product_y.get("features_normalized", product_y.get("features", []))
         }
 
         fcount_x = product_x["feature_count"]

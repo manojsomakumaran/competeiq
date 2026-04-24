@@ -54,7 +54,7 @@ class EcommerceIntelligenceSystem:
         settings: Settings | None = None,
         provider: LangfuseProvider | None = None,
         index_products: bool = True,
-    ) -> "EcommerceIntelligenceSystem":
+    ) -> EcommerceIntelligenceSystem:
         settings = settings or Settings.load()
         settings.ensure_directories()
         provider = provider or get_provider(settings)
@@ -118,9 +118,7 @@ class EcommerceIntelligenceSystem:
     def analyze_category(self, category: str) -> dict[str, Any]:
         categories = {p["category"] for p in self.all_products}
         if category not in categories:
-            raise ValueError(
-                f"Unknown category '{category}'. Available: {sorted(categories)}"
-            )
+            raise ValueError(f"Unknown category '{category}'. Available: {sorted(categories)}")
         return self.orchestrator.analyze_category_with_tracing(category)
 
     def search_products(self, query: str, n_results: int = 5) -> dict[str, Any]:
@@ -136,7 +134,7 @@ class EcommerceIntelligenceSystem:
         documents = (results.get("documents") or [[]])[0] or []
         distances = (results.get("distances") or [[]])[0] or []
         ids = (results.get("ids") or [[]])[0] or []
-        for doc_id, meta, doc, dist in zip(ids, metadatas, documents, distances):
+        for doc_id, meta, doc, dist in zip(ids, metadatas, documents, distances, strict=False):
             similarity = max(0.0, min(1.0, round(1 - float(dist), 4)))
             matches.append(
                 {

@@ -33,7 +33,7 @@ def load_all_catalogs(data_dir: Path | None = None) -> list[CatalogDict]:
     for json_path in sorted(Path(data_dir).glob("*.json")):
         try:
             catalogs.append(load_catalog_file(json_path))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             log.warning("Skipping malformed catalog %s: %s", json_path, exc)
 
     return catalogs or list(DEFAULT_CATALOGS)

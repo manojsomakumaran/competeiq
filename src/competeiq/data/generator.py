@@ -22,49 +22,100 @@ from competeiq.data.schemas import CatalogDict
 CATEGORY_TEMPLATES: dict[str, dict] = {
     "Wireless Headphones": {
         "feature_pool": [
-            "Bluetooth 5.2", "Bluetooth 5.3", "Advanced Noise Cancelling",
-            "Transparency Mode", "30h Battery", "40h Battery", "Quick Charge",
-            "Foldable", "Spatial Audio", "Hi-Res Audio", "USB-C", "Multipoint",
+            "Bluetooth 5.2",
+            "Bluetooth 5.3",
+            "Advanced Noise Cancelling",
+            "Transparency Mode",
+            "30h Battery",
+            "40h Battery",
+            "Quick Charge",
+            "Foldable",
+            "Spatial Audio",
+            "Hi-Res Audio",
+            "USB-C",
+            "Multipoint",
         ],
         "price_range": (79, 279),
     },
     "Smart Watches": {
         "feature_pool": [
-            "Heart Rate", "GPS", "ECG", "SpO2", "7 Day Battery", "10 Day Battery",
-            "Sleep Tracking", "Water Resistant", "100+ Workouts", "AMOLED Display",
-            "LTE", "Voice Assistant",
+            "Heart Rate",
+            "GPS",
+            "ECG",
+            "SpO2",
+            "7 Day Battery",
+            "10 Day Battery",
+            "Sleep Tracking",
+            "Water Resistant",
+            "100+ Workouts",
+            "AMOLED Display",
+            "LTE",
+            "Voice Assistant",
         ],
         "price_range": (129, 499),
     },
     "Portable Speakers": {
         "feature_pool": [
-            "Bluetooth 5.2", "Waterproof", "IP67 Rating", "Stereo Pairing",
-            "Bass Boost", "LED Lights", "24h Battery", "20h Battery",
-            "Mic Input", "Daisy Chain",
+            "Bluetooth 5.2",
+            "Waterproof",
+            "IP67 Rating",
+            "Stereo Pairing",
+            "Bass Boost",
+            "LED Lights",
+            "24h Battery",
+            "20h Battery",
+            "Mic Input",
+            "Daisy Chain",
         ],
         "price_range": (59, 199),
     },
     "Laptops": {
         "feature_pool": [
-            "16GB RAM", "32GB RAM", "1TB SSD", "512GB SSD", "14\" OLED",
-            "15.6\" IPS", "Intel Core i7", "AMD Ryzen 7", "Backlit Keyboard",
-            "Thunderbolt 4", "Wi-Fi 6E", "Dedicated GPU",
+            "16GB RAM",
+            "32GB RAM",
+            "1TB SSD",
+            "512GB SSD",
+            '14" OLED',
+            '15.6" IPS',
+            "Intel Core i7",
+            "AMD Ryzen 7",
+            "Backlit Keyboard",
+            "Thunderbolt 4",
+            "Wi-Fi 6E",
+            "Dedicated GPU",
         ],
         "price_range": (799, 2199),
     },
     "Tablets": {
         "feature_pool": [
-            "10.9\" Display", "12.4\" Display", "M2 Chip", "Snapdragon 8 Gen 2",
-            "8GB RAM", "12GB RAM", "128GB Storage", "256GB Storage",
-            "Stylus Support", "Keyboard Compatible", "5G", "Wi-Fi 6",
+            '10.9" Display',
+            '12.4" Display',
+            "M2 Chip",
+            "Snapdragon 8 Gen 2",
+            "8GB RAM",
+            "12GB RAM",
+            "128GB Storage",
+            "256GB Storage",
+            "Stylus Support",
+            "Keyboard Compatible",
+            "5G",
+            "Wi-Fi 6",
         ],
         "price_range": (299, 1099),
     },
     "Earbuds": {
         "feature_pool": [
-            "Bluetooth 5.3", "Active Noise Cancelling", "Transparency Mode",
-            "IPX4", "IPX7", "Wireless Charging", "6h Battery", "8h Battery",
-            "Multipoint", "Spatial Audio", "Low Latency Mode",
+            "Bluetooth 5.3",
+            "Active Noise Cancelling",
+            "Transparency Mode",
+            "IPX4",
+            "IPX7",
+            "Wireless Charging",
+            "6h Battery",
+            "8h Battery",
+            "Multipoint",
+            "Spatial Audio",
+            "Low Latency Mode",
         ],
         "price_range": (49, 249),
     },
@@ -77,20 +128,28 @@ COMPANY_PROFILES: dict[str, dict] = {
         "sku_prefix": "CZ",
         "categories": ["Wireless Headphones", "Smart Watches", "Laptops", "Tablets"],
         "products_per_category": 2,
-        "price_skew": 1.15,   # premium-leaning
+        "price_skew": 1.15,  # premium-leaning
     },
     "Company W": {
         "description": "Budget-friendly value brand",
         "sku_prefix": "CW",
         "categories": ["Wireless Headphones", "Portable Speakers", "Earbuds", "Tablets"],
         "products_per_category": 2,
-        "price_skew": 0.80,   # value-leaning
+        "price_skew": 0.80,  # value-leaning
     },
 }
 
 
-DISCOUNT_PATTERNS = ["10% off", "15% off", "20% off", "5% off + Free Case",
-                    "Free Shipping", "Buy 1 Get 1 50% off", None, None]
+DISCOUNT_PATTERNS = [
+    "10% off",
+    "15% off",
+    "20% off",
+    "5% off + Free Case",
+    "Free Shipping",
+    "Buy 1 Get 1 50% off",
+    None,
+    None,
+]
 
 
 def _synth_product(
@@ -112,8 +171,7 @@ def _synth_product(
     tier = "Pro" if index % 2 else "Lite"
     return {
         "category": category,
-        "product_name": f"{company.split()[-1]} {category.split()[0]} {tier} "
-                       f"{index + 1}",
+        "product_name": f"{company.split()[-1]} {category.split()[0]} {tier} " f"{index + 1}",
         "price": base_price,
         "currency": "USD",
         "features": features,

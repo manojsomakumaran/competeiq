@@ -19,7 +19,7 @@ def test_generate_all_is_deterministic_by_seed(tmp_path):
     b = tmp_path / "b"
     paths_a = generate_all(a, seed=42)
     paths_b = generate_all(b, seed=42)
-    for pa, pb in zip(sorted(paths_a), sorted(paths_b)):
+    for pa, pb in zip(sorted(paths_a), sorted(paths_b), strict=False):
         assert pa.read_bytes() == pb.read_bytes()
 
 
