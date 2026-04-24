@@ -1,0 +1,192 @@
+"""Built-in catalog constants (Companies X and Y) — copied verbatim from the notebook."""
+
+from __future__ import annotations
+
+from competeiq.data.schemas import CatalogDict
+
+COMPANY_X_CATALOG: CatalogDict = {
+    "company": "Company X",
+    "description": "Premium consumer electronics brand",
+    "products": [
+        {
+            "category": "Wireless Headphones",
+            "product_name": "Headphones X1",
+            "price": 99.99,
+            "currency": "USD",
+            "features": ["Bluetooth 5.0", "Noise Cancelling", "20h Battery", "Foldable"],
+            "discount": "10% off",
+            "availability": "In Stock",
+            "sku": "X1-HP-001",
+        },
+        {
+            "category": "Wireless Headphones",
+            "product_name": "Headphones X2 Pro",
+            "price": 149.99,
+            "currency": "USD",
+            "features": [
+                "Bluetooth 5.2",
+                "Advanced ANC",
+                "30h Battery",
+                "Foldable",
+                "USB-C",
+                "Multipoint",
+            ],
+            "discount": None,
+            "availability": "In Stock",
+            "sku": "X2-HP-002",
+        },
+        {
+            "category": "Smart Watches",
+            "product_name": "Watch X1",
+            "price": 199.99,
+            "currency": "USD",
+            "features": [
+                "Heart Rate",
+                "GPS",
+                "5 Day Battery",
+                "Water Resistant",
+                "Sleep Tracking",
+            ],
+            "discount": "15% off",
+            "availability": "In Stock",
+            "sku": "X1-SW-001",
+        },
+        {
+            "category": "Smart Watches",
+            "product_name": "Watch X2 Ultra",
+            "price": 349.99,
+            "currency": "USD",
+            "features": ["Heart Rate", "GPS", "ECG", "10 Day Battery", "Titanium", "Dive Mode"],
+            "discount": None,
+            "availability": "Limited Stock",
+            "sku": "X2-SW-002",
+        },
+        {
+            "category": "Portable Speakers",
+            "product_name": "Speaker X1",
+            "price": 79.99,
+            "currency": "USD",
+            "features": ["Bluetooth 5.0", "Waterproof", "12h Battery", "360 Sound"],
+            "discount": None,
+            "availability": "In Stock",
+            "sku": "X1-SP-001",
+        },
+        {
+            "category": "Portable Speakers",
+            "product_name": "Speaker X2 Party",
+            "price": 149.99,
+            "currency": "USD",
+            "features": [
+                "Bluetooth 5.2",
+                "Waterproof",
+                "24h Battery",
+                "LED Lights",
+                "Mic Input",
+            ],
+            "discount": "20% off",
+            "availability": "In Stock",
+            "sku": "X2-SP-002",
+        },
+    ],
+}
+
+
+COMPANY_Y_CATALOG: CatalogDict = {
+    "company": "Company Y",
+    "description": "Value-focused consumer electronics",
+    "products": [
+        {
+            "category": "Wireless Headphones",
+            "product_name": "Headphones Z1",
+            "price": 105.00,
+            "currency": "USD",
+            "features": [
+                "Bluetooth 5.2",
+                "Noise Cancelling",
+                "25h Battery",
+                "Quick Charge",
+                "Foldable",
+            ],
+            "discount": "5% off + Free Case",
+            "availability": "In Stock",
+            "sku": "Z1-HP-001",
+        },
+        {
+            "category": "Wireless Headphones",
+            "product_name": "Headphones Z2",
+            "price": 115.00,
+            "currency": "USD",
+            "features": [
+                "Bluetooth 5.2",
+                "Advanced Noise Cancelling",
+                "30h Battery",
+                "Waterproof",
+            ],
+            "discount": None,
+            "availability": "In Stock",
+            "sku": "Z2-HP-002",
+        },
+        {
+            "category": "Smart Watches",
+            "product_name": "Watch Z1",
+            "price": 189.99,
+            "currency": "USD",
+            "features": [
+                "Heart Rate",
+                "GPS",
+                "7 Day Battery",
+                "Water Resistant",
+                "Sleep Tracking",
+                "SpO2",
+            ],
+            "discount": "20% off",
+            "availability": "In Stock",
+            "sku": "Z1-SW-001",
+        },
+        {
+            "category": "Smart Watches",
+            "product_name": "Watch Z2 Sport",
+            "price": 279.99,
+            "currency": "USD",
+            "features": [
+                "Heart Rate",
+                "GPS",
+                "5 Day Battery",
+                "100+ Workouts",
+                "Voice Assistant",
+            ],
+            "discount": "10% off",
+            "availability": "In Stock",
+            "sku": "Z2-SW-002",
+        },
+        {
+            "category": "Portable Speakers",
+            "product_name": "Speaker Z1",
+            "price": 69.99,
+            "currency": "USD",
+            "features": ["Bluetooth 5.0", "Waterproof", "15h Battery", "Stereo Pairing"],
+            "discount": "Free Shipping",
+            "availability": "In Stock",
+            "sku": "Z1-SP-001",
+        },
+        {
+            "category": "Portable Speakers",
+            "product_name": "Speaker Z2 Boom",
+            "price": 129.99,
+            "currency": "USD",
+            "features": [
+                "Bluetooth 5.2",
+                "IP67 Rating",
+                "20h Battery",
+                "Bass Boost",
+                "Daisy Chain",
+            ],
+            "discount": None,
+            "availability": "In Stock",
+            "sku": "Z2-SP-002",
+        },
+    ],
+}
+
+
+DEFAULT_CATALOGS: list[CatalogDict] = [COMPANY_X_CATALOG, COMPANY_Y_CATALOG]

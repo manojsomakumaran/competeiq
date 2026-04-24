@@ -1,0 +1,3 @@
+# Compiled (run `pip-compile requirements/base.in`).
+# For now we keep this file as a simple mirror of base.in.
+-r base.in
