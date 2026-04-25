@@ -36,13 +36,14 @@ include hashes. Regenerate after changing any `*.in`:
 
 ```powershell
 python -m pip install uv
-python -m uv pip compile requirements/base.in --python-version 3.11 --output-file requirements/base.txt --generate-hashes
-python -m uv pip compile requirements/dev.in  --python-version 3.11 --output-file requirements/dev.txt  --generate-hashes
-python -m uv pip compile requirements/test.in --python-version 3.11 --output-file requirements/test.txt --generate-hashes
+python -m uv pip compile requirements/base.in --python-version 3.11 --universal --output-file requirements/base.txt --generate-hashes
+python -m uv pip compile requirements/dev.in  --python-version 3.11 --universal --output-file requirements/dev.txt  --generate-hashes
+python -m uv pip compile requirements/test.in --python-version 3.11 --universal --output-file requirements/test.txt --generate-hashes
 ```
 
-We resolve against Python 3.11 (the lowest supported version) so the
-locked set installs cleanly on the entire 3.11–3.13 range.
+We resolve against Python 3.11 (the lowest supported version) and pass
+`--universal` so the same lockfile is portable across Linux/macOS/Windows
+runners (otherwise platform-only transitives like `hf-xet` are missed).
 
 ## Coding conventions
 
