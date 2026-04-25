@@ -1,0 +1,60 @@
+# VCS / IDE
+.git
+.gitignore
+.gitattributes
+.github
+.gitlab-ci.yml
+.idea
+.vscode
+
+# Python build artefacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+build/
+dist/
+.eggs/
+.pytest_cache
+.ruff_cache
+.mypy_cache
+htmlcov/
+coverage.xml
+.coverage*
+
+# Local virtualenvs
+.venv
+venv
+env
+
+# Notebooks + EDA assets (not needed in image)
+Colab-Project/
+*.ipynb
+ecommerce_eda.png
+
+# Tests are not shipped in production images
+tests/
+
+# Local Chroma persistence
+.chroma/
+chroma_db/
+
+# Secrets — NEVER ship into image
+.env
+.env.*
+!.env.example
+
+# Docs and dev meta
+docs/
+CHANGELOG.md
+CONTRIBUTING.md
+SECURITY.md
+LICENSE.txt
+
+# Misc
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db

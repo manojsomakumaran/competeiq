@@ -10,6 +10,7 @@ Welcome to the CompeteIQ documentation.  Start here:
 | [usage-ui.md](usage-ui.md) | Gradio web UI tour |
 | [development.md](development.md) | Local setup, coding conventions, workflow |
 | [testing.md](testing.md) | Test strategy, markers, running tests |
+| [docker.md](docker.md) | Container images, docker-compose |
 | [deployment-aws.md](deployment-aws.md) | ECS Fargate + ALB + ECR deployment |
 | [observability.md](observability.md) | Langfuse tracing, logging, health checks |
 | [colab-vs-local.md](colab-vs-local.md) | Notes on running in Google Colab vs local |
