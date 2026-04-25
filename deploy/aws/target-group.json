@@ -1,0 +1,27 @@
+{
+  "Name": "competeiq-ui",
+  "Protocol": "HTTP",
+  "Port": 7860,
+  "VpcId": "<VPC_ID>",
+  "TargetType": "ip",
+  "HealthCheckProtocol": "HTTP",
+  "HealthCheckPath": "/",
+  "HealthCheckPort": "7860",
+  "HealthCheckIntervalSeconds": 30,
+  "HealthCheckTimeoutSeconds": 10,
+  "HealthyThresholdCount": 2,
+  "UnhealthyThresholdCount": 5,
+  "Matcher": {
+    "HttpCode": "200-399"
+  },
+  "TargetGroupAttributes": [
+    { "Key": "deregistration_delay.timeout_seconds", "Value": "30" },
+    { "Key": "stickiness.enabled",                   "Value": "true" },
+    { "Key": "stickiness.type",                      "Value": "lb_cookie" },
+    { "Key": "stickiness.lb_cookie.duration_seconds","Value": "3600" }
+  ],
+  "Tags": [
+    { "Key": "Project",     "Value": "competeiq" },
+    { "Key": "Environment", "Value": "production" }
+  ]
+}

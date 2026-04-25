@@ -1,0 +1,96 @@
+{
+  "family": "competeiq-ui",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/competeiq-ecs-task-execution",
+  "taskRoleArn":      "arn:aws:iam::<ACCOUNT_ID>:role/competeiq-ecs-task",
+  "containerDefinitions": [
+    {
+      "name": "ui",
+      "image": "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/competeiq-ui:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "name": "gradio",
+          "containerPort": 7860,
+          "hostPort": 7860,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "environment": [
+        { "name": "COMPETEIQ_CHROMA_MODE", "value": "persistent" },
+        { "name": "COMPETEIQ_CHROMA_PATH", "value": "/data/.chroma" },
+        { "name": "GRADIO_SERVER_NAME",    "value": "0.0.0.0" },
+        { "name": "GRADIO_SERVER_PORT",    "value": "7860" },
+        { "name": "GRADIO_ANALYTICS_ENABLED", "value": "False" },
+        { "name": "LANGFUSE_HOST",         "value": "https://us.cloud.langfuse.com" },
+        { "name": "COMPETEIQ_LOG_LEVEL",   "value": "INFO" }
+      ],
+      "secrets": [
+        {
+          "name": "OPENAI_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:competeiq/openai_api_key"
+        },
+        {
+          "name": "LANGFUSE_SECRET_KEY",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:competeiq/langfuse_secret_key"
+        },
+        {
+          "name": "LANGFUSE_PUBLIC_KEY",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT_ID>:secret:competeiq/langfuse_public_key"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "chroma-data",
+          "containerPath": "/data",
+          "readOnly": false
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:7860/').status==200 else 1)\""
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 30
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group":         "/ecs/competeiq-ui",
+          "awslogs-region":        "<REGION>",
+          "awslogs-create-group":  "true",
+          "awslogs-stream-prefix": "ui"
+        }
+      },
+      "stopTimeout": 30,
+      "readonlyRootFilesystem": false,
+      "ulimits": [
+        { "name": "nofile", "softLimit": 65535, "hardLimit": 65535 }
+      ]
+    }
+  ],
+  "volumes": [
+    {
+      "name": "chroma-data",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "<EFS_FILESYSTEM_ID>",
+        "rootDirectory": "/competeiq",
+        "transitEncryption": "ENABLED",
+        "authorizationConfig": {
+          "iam": "ENABLED"
+        }
+      }
+    }
+  ]
+}

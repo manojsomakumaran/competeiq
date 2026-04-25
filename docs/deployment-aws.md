@@ -39,6 +39,9 @@ You must pre-create these (Terraform/CloudFormation left outside this repo):
 | `deploy/Dockerfile.ui` | Container image for the Gradio service |
 | `deploy/aws/task-definition.json` | ECS task definition template |
 | `deploy/aws/service.json` | ECS service configuration template |
+| `deploy/aws/target-group.json` | ALB target group configuration template |
+| `deploy/aws/deploy.ps1` | One-shot build + push + deploy helper script |
+| `deploy/aws/README.md` | Step-by-step bootstrap + placeholder reference |
 | `.gitlab-ci.yml` | `publish-ecr` + `deploy-staging` / `deploy-prod` jobs |
 
 Before applying, substitute `<ACCOUNT_ID>`, `<REGION>`, subnet / SG IDs and

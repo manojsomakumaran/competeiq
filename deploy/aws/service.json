@@ -1,0 +1,38 @@
+{
+  "cluster": "competeiq",
+  "serviceName": "competeiq-ui",
+  "taskDefinition": "competeiq-ui",
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  },
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets":        ["<PRIVATE_SUBNET_1>", "<PRIVATE_SUBNET_2>"],
+      "securityGroups": ["<SG_ECS_TASK>"],
+      "assignPublicIp": "DISABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:<REGION>:<ACCOUNT_ID>:targetgroup/competeiq-ui/<TG_ID>",
+      "containerName": "ui",
+      "containerPort": 7860
+    }
+  ],
+  "healthCheckGracePeriodSeconds": 60,
+  "schedulingStrategy": "REPLICA",
+  "enableECSManagedTags": true,
+  "propagateTags": "SERVICE",
+  "tags": [
+    { "key": "Project", "value": "competeiq" },
+    { "key": "Environment", "value": "production" }
+  ]
+}
